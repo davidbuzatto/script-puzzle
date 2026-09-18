@@ -1,0 +1,1 @@
+Simple script language for a puzzle game.
