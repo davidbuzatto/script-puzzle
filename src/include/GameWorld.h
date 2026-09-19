@@ -8,7 +8,9 @@
 #pragma once
 
 typedef struct GameWorld {
-    int dummy;
+    int size;
+    int rows;
+    int cols;
 } GameWorld;
 
 /**

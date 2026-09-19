@@ -24,7 +24,9 @@ GameWorld *createGameWorld( void ) {
 
     GameWorld *gw = (GameWorld*) malloc( sizeof( GameWorld ) );
 
-    gw->dummy = 0;
+    gw->size = 50;
+    gw->rows = GetScreenHeight() / gw->size;
+    gw->cols = GetScreenWidth() / gw->size;
 
     return gw;
 
@@ -52,14 +54,13 @@ void drawGameWorld( GameWorld *gw ) {
     BeginDrawing();
     ClearBackground( WHITE );
 
-    const char *text = "Basic game template";
-    Vector2 m = MeasureTextEx( GetFontDefault(), text, 40, 4 );
-    int x = GetScreenWidth() / 2 - m.x / 2;
-    int y = GetScreenHeight() / 2 - m.y / 2;
-    DrawRectangle( x, y, m.x, m.y, BLACK );
-    DrawText( text, x, y, 40, WHITE );
+    for ( int row = 0; row <= gw->rows; row++ ) {
+        DrawLine( 0, gw->size * row, GetScreenWidth(), gw->size * row, BLACK );
+    }
 
-    DrawFPS( 20, 20 );
+    for ( int col = 0; col <= gw->cols; col++ ) {
+        DrawLine( gw->size * col, 0, gw->size * col, GetScreenHeight(), BLACK );
+    }
 
     EndDrawing();
 
