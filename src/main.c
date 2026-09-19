@@ -1,8 +1,7 @@
 /**
  * @file main.c
  * @author Prof. Dr. David Buzatto
- * @brief Main function and logic for the game. Base template for game
- * development in C using Raylib (https://www.raylib.com/).
+ * @brief Simple script languague + puzzle game.
  * 
  * @copyright Copyright (c) 2026
  */
@@ -11,13 +10,43 @@
 #include <stdbool.h>
 
 #include "GameWindow.h"
+#include "Lexer.h"
+#include "Macros.h"
+#include "Scanner.h"
+#include "Token.h"
 
 int main( void ) {
+
+    Scanner cs;
+    initScanner( &cs, "source.txt");
+
+    Lexer ts;
+    initLexer( &ts, &cs );
+
+    Token t;
+
+    do {
+        t = getTokenLexer( &ts );
+        printToken( &t );
+        advanceLexer( &ts );
+    } while ( t.type != TOKEN_TYPE_EOF );
+
+    /*do {
+        trace( "%c", getScanner( &cs ) );
+    } while ( advanceScanner( &cs ) );*/
+
+    destroyScanner( &cs );
+
+    return 0;
+
+}
+
+/*int main( void ) {
 
     GameWindow *gameWindow = createGameWindow(
         800,             // width
         450,             // height
-        "Window Title",  // title
+        "Script Puzzle", // title
         60,              // target FPS
         true,            // antialiasing
         false,           // resizable
@@ -34,4 +63,4 @@ int main( void ) {
 
     return 0;
 
-}
+}*/

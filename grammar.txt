@@ -1,0 +1,10 @@
+script = statements EOF .
+
+statements = statement statements .
+
+statement = command .
+
+command = 'mover' 
+        | 'girar'
+        | 'pegar'
+        | 'soltar' .

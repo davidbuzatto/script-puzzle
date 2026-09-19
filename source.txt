@@ -1,0 +1,6 @@
+mover a5a
+pegar
+girar
+girar
+mover 54
+mover 5a
