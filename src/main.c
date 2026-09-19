@@ -15,32 +15,15 @@
 #include "Source.h"
 #include "Token.h"
 
+static void testSource( const char *file );
+static void testLexer( const char *file );
+static void testParser( const char *file );
+
 int main( void ) {
 
-    Source cs;
-    initSource( &cs, "source.txt");
-
-    Lexer ts;
-    initLexer( &ts, &cs );
-
-    /*do {
-        trace( "%c", getCharSource( &cs ) );
-    } while ( advanceSource( &cs ) );*/
-
-    Token t;
-    do {
-        t = getTokenLexer( &ts );
-        printToken( &t );
-        advanceLexer( &ts );
-    } while ( t.type != TOKEN_TYPE_EOF );
-
-    destroySource( &cs );
-
-    return 0;
-
-}
-
-/*int main( void ) {
+    //testSource( "source.txt" );
+    //testLexer( "source.txt" );
+    //testParser( "source.txt" );
 
     GameWindow *gameWindow = createGameWindow(
         800,             // width
@@ -62,4 +45,55 @@ int main( void ) {
 
     return 0;
 
-}*/
+}
+
+static void testSource( const char *file ) {
+
+    Source cs;
+    initSource( &cs, file );
+
+    do {
+        trace( "%c", getCharSource( &cs ) );
+    } while ( advanceSource( &cs ) );
+
+    destroySource( &cs );
+
+}
+
+static void testLexer( const char *file ) {
+
+    Source cs;
+    initSource( &cs, file );
+
+    Lexer ts;
+    initLexer( &ts, &cs );
+
+    Token t;
+    do {
+        t = getTokenLexer( &ts );
+        printToken( &t );
+        advanceLexer( &ts );
+    } while ( t.type != TOKEN_TYPE_EOF );
+
+    destroySource( &cs );
+
+}
+
+static void testParser( const char *file ) {
+
+    Source cs;
+    initSource( &cs, file );
+
+    Lexer ts;
+    initLexer( &ts, &cs );
+
+    Token t;
+    do {
+        t = getTokenLexer( &ts );
+        printToken( &t );
+        advanceLexer( &ts );
+    } while ( t.type != TOKEN_TYPE_EOF );
+
+    destroySource( &cs );
+
+}
