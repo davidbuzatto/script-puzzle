@@ -1,9 +1,9 @@
-mover a5a
-pegar girar pegar teste mover    100
-girar
-girar
-mover 54
-mover 5a
+mover 10
+pegar
+girar girar 
+mover 10 // teste asdf asd asd sad    
+girar girar girar
+mover 5
+soltar
 
-
-mover 5a
++ - * / % < <= > >= == != ! ( ) , , , 

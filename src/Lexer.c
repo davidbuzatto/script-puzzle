@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #include "raylib/raylib.h"
 
@@ -10,10 +11,15 @@
 static char valueBuffer[100];
 static int bufferPos;
 
-static Token currentToken;
+static TokenType type;
+static int lineNumber;
+static int charNumber;
 
+static void skipWhiteSpace( Scanner *scan );
+static void skipToEndOfLine( Lexer *lexer );
 static void scanIdentifier( Scanner *scan );
-static void classifyCurrentToken( void );
+static void scanIntegerLiteral( Scanner *scan );
+static void classifyTokenType( char *tokenValue );
 
 void initLexer( Lexer *lexer, Scanner *scan ) {
     lexer->scan = scan;
@@ -27,44 +33,130 @@ void destroyLexer( Lexer *lexer ) {
 bool advanceLexer( Lexer *lexer ) {
 
     Scanner *scan = lexer->scan;
+    skipWhiteSpace( scan );
 
     if ( scan->eofReached ) {
         lexer->eofReached = true;
         return false;
     }
 
-    bufferPos = 0;
+    lineNumber = scan->lineNumber;
+    charNumber = scan->charNumber;
 
     char c = getCharScanner( scan );
-    
-    // discard spaces
-    while ( c != CHAR_STREAM_EOF && ( c == ' ' || c == '\t' || c == '\n' ) ) {
-        advanceScanner( scan );
-        c = getCharScanner( scan );
-    }
 
-    if ( scan->eofReached ) {
-        lexer->eofReached = true;
-        return false;
-    }
+    bufferPos = 0;
+    valueBuffer[bufferPos] = '\0';
 
-    TokenType type = TOKEN_TYPE_IDENTIFIER;
-    int lineNumber = scan->lineNumber;
-    int charNumber = scan->charNumber;
+    if ( isalpha( c ) ) {
+        type = TOKEN_TYPE_IDENTIFIER;
+        scanIdentifier( scan );
+        classifyTokenType( valueBuffer );
+        if ( type != TOKEN_TYPE_IDENTIFIER ) {
+            bufferPos = 0;
+            valueBuffer[bufferPos] = '\0';
+        }
+    } else if ( isdigit( c ) ) {
+        type = TOKEN_TYPE_INTEGER;
+        scanIntegerLiteral( scan );
+    } else {
 
-    switch ( c ) {
-        default:
-            scanIdentifier( scan );
-            break;
-    }
+        switch ( c ) {
 
-    currentToken.type = type;
-    currentToken.lineNumber = lineNumber;
-    currentToken.charNumber = charNumber;
-    TextCopy( currentToken.value, valueBuffer );
+            case '+':
+                type = TOKEN_TYPE_ADD;
+                advanceScanner( scan );
+                break;
 
-    if ( type == TOKEN_TYPE_IDENTIFIER ) {
-        classifyCurrentToken();
+            case '-':
+                type = TOKEN_TYPE_SUB;
+                advanceScanner( scan );
+                break;
+
+            case '*':
+                type = TOKEN_TYPE_MUL;
+                advanceScanner( scan );
+                break;
+
+            case '/':
+                advanceScanner( scan );
+                if ( getCharScanner( scan ) == '/' ) {
+                    skipToEndOfLine( lexer );
+                    advanceScanner( scan );
+                    advanceLexer( lexer );
+                } else {
+                    type = TOKEN_TYPE_DIV;
+                }
+                break;
+            
+            case '%':
+                type = TOKEN_TYPE_MOD;
+                advanceScanner( scan );
+                break;
+            
+            case '<':
+                advanceScanner( scan );
+                if ( getCharScanner( scan ) == '=' ) {
+                    type = TOKEN_TYPE_LEQ;
+                    advanceScanner( scan );
+                } else {
+                    type = TOKEN_TYPE_LT;
+                }
+                break;
+
+            case '>':
+                advanceScanner( scan );
+                if ( getCharScanner( scan ) == '=' ) {
+                    type = TOKEN_TYPE_GEQ;
+                    advanceScanner( scan );
+                } else {
+                    type = TOKEN_TYPE_GT;
+                }
+                break;
+
+            case '=':
+                advanceScanner( scan );
+                if ( getCharScanner( scan ) == '=' ) {
+                    type = TOKEN_TYPE_EQ;
+                    advanceScanner( scan );
+                } else {
+                    trace( "Invalid character '%c'", c );
+                    advanceScanner( scan );
+                }
+                break;
+
+            case '!':
+                advanceScanner( scan );
+                if ( getCharScanner( scan ) == '=' ) {
+                    type = TOKEN_TYPE_NEQ;
+                    advanceScanner( scan );
+                } else {
+                    type = TOKEN_TYPE_NOT;
+                }
+                break;
+            
+            case '(':
+                type = TOKEN_TYPE_LEFT_PAR;
+                advanceScanner( scan );
+                break;
+
+            case ')':
+                type = TOKEN_TYPE_RIGHT_PAR;
+                advanceScanner( scan );
+                break;
+
+            case ',':
+                type = TOKEN_TYPE_COMMA;
+                advanceScanner( scan );
+                break;
+
+            default:
+                trace( "Invalid character '%c'", c );
+                advanceScanner( scan );
+                break;
+
+        }
+
     }
 
     return true;
@@ -76,18 +168,54 @@ Token getTokenLexer( Lexer *lexer ) {
     if ( lexer->eofReached ) {
         return (Token) {
             .type = TOKEN_TYPE_EOF,
+            .value = "",
             .lineNumber = lexer->scan->lineNumber,
-            .charNumber = lexer->scan->charNumber
+            .charNumber = lexer->scan->charNumber + 1
          };
     }
 
-    return currentToken;
+    Token token = {
+        .type = type,
+        .lineNumber = lineNumber,
+        .charNumber = charNumber
+    };
+
+    TextCopy( token.value, valueBuffer );
+
+    return token;
+
+}
+
+static void skipWhiteSpace( Scanner *scan ) {
+
+    char c = getCharScanner( scan );
+    
+    // discard spaces
+    while ( c != CHAR_STREAM_EOF && ( c == ' ' || c == '\t' || c == '\n' ) ) {
+        advanceScanner( scan );
+        c = getCharScanner( scan );
+    }
+
+}
+
+static void skipToEndOfLine( Lexer *lexer ) {
+
+    Scanner *scan = lexer->scan;
+
+    while ( getCharScanner( scan ) != '\n' ) {
+        advanceScanner( scan );
+        if ( scan->eofReached ) {
+            lexer->eofReached = true;
+            break;
+        }
+    }
 
 }
 
 static void scanIdentifier( Scanner *scan ) {
 
     char c = getCharScanner( scan );
+    bufferPos = 0;
 
     while ( c != CHAR_STREAM_EOF && c != ' ' && c != '\t' && c != '\n' ) {
         valueBuffer[bufferPos++] = c;
@@ -99,39 +227,33 @@ static void scanIdentifier( Scanner *scan ) {
 
 }
 
-static void classifyCurrentToken( void ) {
+static void scanIntegerLiteral( Scanner *scan ) {
 
-    char *tokenValue = currentToken.value;
+    char c = getCharScanner( scan );
+    bufferPos = 0;
+
+    do {
+        valueBuffer[bufferPos++] = c;
+        advanceScanner( scan );
+        c = getCharScanner( scan );
+    } while ( isdigit( c ) );
+
+    valueBuffer[bufferPos] = '\0';
+
+}
+
+static void classifyTokenType( char *tokenValue ) {
 
     if ( TextIsEqual( tokenValue, "mover" ) ) {
-        currentToken.type = TOKEN_TYPE_COMMAND;
+        type = TOKEN_TYPE_MOVER;
     } else if ( TextIsEqual( tokenValue, "girar" ) ) {
-        currentToken.type = TOKEN_TYPE_COMMAND;
+        type = TOKEN_TYPE_GIRAR;
     } else if ( TextIsEqual( tokenValue, "pegar" ) ) {
-        currentToken.type = TOKEN_TYPE_COMMAND;
+        type = TOKEN_TYPE_PEGAR;
     } else if ( TextIsEqual( tokenValue, "soltar" ) ) {
-        currentToken.type = TOKEN_TYPE_COMMAND;
+        type = TOKEN_TYPE_SOLTAR;
     } else {
-
-        // check if it is an integer or invalid
-        int length = TextLength( currentToken.value );
-        bool invalid = false;
-        bool isFirstCharDigit = false;
-
-        for ( int i = 0; i < length; i++ ) {
-            char c = currentToken.value[i];
-            if ( c < '0' || c > '9' ) {
-                invalid = true;
-                break;
-            } else if ( i == 0 ) {
-                isFirstCharDigit = true;
-            }
-        }
-
-        if ( isFirstCharDigit ) {
-            currentToken.type = invalid ? TOKEN_TYPE_INVALID : TOKEN_TYPE_INTEGER;
-        }
-
+        type = TOKEN_TYPE_IDENTIFIER;
     }
 
 }
