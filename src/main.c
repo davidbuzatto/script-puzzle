@@ -23,17 +23,16 @@ int main( void ) {
     Lexer ts;
     initLexer( &ts, &cs );
 
-    Token t;
+    /*do {
+        trace( "%c", getCharSource( &cs ) );
+    } while ( advanceSource( &cs ) );*/
 
+    Token t;
     do {
         t = getTokenLexer( &ts );
         printToken( &t );
         advanceLexer( &ts );
     } while ( t.type != TOKEN_TYPE_EOF );
-
-    /*do {
-        trace( "%c", getSource( &cs ) );
-    } while ( advanceSource( &cs ) );*/
 
     destroySource( &cs );
 
