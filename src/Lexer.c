@@ -4,9 +4,9 @@
 
 #include "raylib/raylib.h"
 
-#include "Scanner.h"
-#include "Macros.h"
 #include "Lexer.h"
+#include "Macros.h"
+#include "Source.h"
 
 static char valueBuffer[100];
 static int bufferPos;
@@ -15,14 +15,14 @@ static TokenType type;
 static int lineNumber;
 static int charNumber;
 
-static void skipWhiteSpace( Scanner *scan );
+static void skipWhiteSpace( Source *source );
 static void skipToEndOfLine( Lexer *lexer );
-static void scanIdentifier( Scanner *scan );
-static void scanIntegerLiteral( Scanner *scan );
+static void scanIdentifier( Source *source );
+static void scanIntegerLiteral( Source *source );
 static void classifyTokenType( char *tokenValue );
 
-void initLexer( Lexer *lexer, Scanner *scan ) {
-    lexer->scan = scan;
+void initLexer( Lexer *lexer, Source *source ) {
+    lexer->source = source;
     lexer->eofReached = false;
     advanceLexer( lexer );
 }
@@ -32,25 +32,25 @@ void destroyLexer( Lexer *lexer ) {
 
 bool advanceLexer( Lexer *lexer ) {
 
-    Scanner *scan = lexer->scan;
-    skipWhiteSpace( scan );
+    Source *source = lexer->source;
+    skipWhiteSpace( source );
 
-    if ( scan->eofReached ) {
+    if ( source->eofReached ) {
         lexer->eofReached = true;
         return false;
     }
 
-    lineNumber = scan->lineNumber;
-    charNumber = scan->charNumber;
+    lineNumber = source->lineNumber;
+    charNumber = source->charNumber;
 
-    char c = getCharScanner( scan );
+    char c = getCharSource( source );
 
     bufferPos = 0;
     valueBuffer[bufferPos] = '\0';
 
     if ( isalpha( c ) ) {
         type = TOKEN_TYPE_IDENTIFIER;
-        scanIdentifier( scan );
+        scanIdentifier( source );
         classifyTokenType( valueBuffer );
         if ( type != TOKEN_TYPE_IDENTIFIER ) {
             bufferPos = 0;
@@ -58,31 +58,31 @@ bool advanceLexer( Lexer *lexer ) {
         }
     } else if ( isdigit( c ) ) {
         type = TOKEN_TYPE_INTEGER;
-        scanIntegerLiteral( scan );
+        scanIntegerLiteral( source );
     } else {
 
         switch ( c ) {
 
             case '+':
                 type = TOKEN_TYPE_ADD;
-                advanceScanner( scan );
+                advanceSource( source );
                 break;
 
             case '-':
                 type = TOKEN_TYPE_SUB;
-                advanceScanner( scan );
+                advanceSource( source );
                 break;
 
             case '*':
                 type = TOKEN_TYPE_MUL;
-                advanceScanner( scan );
+                advanceSource( source );
                 break;
 
             case '/':
-                advanceScanner( scan );
-                if ( getCharScanner( scan ) == '/' ) {
+                advanceSource( source );
+                if ( getCharSource( source ) == '/' ) {
                     skipToEndOfLine( lexer );
-                    advanceScanner( scan );
+                    advanceSource( source );
                     advanceLexer( lexer );
                 } else {
                     type = TOKEN_TYPE_DIV;
@@ -91,45 +91,45 @@ bool advanceLexer( Lexer *lexer ) {
             
             case '%':
                 type = TOKEN_TYPE_MOD;
-                advanceScanner( scan );
+                advanceSource( source );
                 break;
             
             case '<':
-                advanceScanner( scan );
-                if ( getCharScanner( scan ) == '=' ) {
+                advanceSource( source );
+                if ( getCharSource( source ) == '=' ) {
                     type = TOKEN_TYPE_LEQ;
-                    advanceScanner( scan );
+                    advanceSource( source );
                 } else {
                     type = TOKEN_TYPE_LT;
                 }
                 break;
 
             case '>':
-                advanceScanner( scan );
-                if ( getCharScanner( scan ) == '=' ) {
+                advanceSource( source );
+                if ( getCharSource( source ) == '=' ) {
                     type = TOKEN_TYPE_GEQ;
-                    advanceScanner( scan );
+                    advanceSource( source );
                 } else {
                     type = TOKEN_TYPE_GT;
                 }
                 break;
 
             case '=':
-                advanceScanner( scan );
-                if ( getCharScanner( scan ) == '=' ) {
+                advanceSource( source );
+                if ( getCharSource( source ) == '=' ) {
                     type = TOKEN_TYPE_EQ;
-                    advanceScanner( scan );
+                    advanceSource( source );
                 } else {
                     trace( "Invalid character '%c'", c );
-                    advanceScanner( scan );
+                    advanceSource( source );
                 }
                 break;
 
             case '!':
-                advanceScanner( scan );
-                if ( getCharScanner( scan ) == '=' ) {
+                advanceSource( source );
+                if ( getCharSource( source ) == '=' ) {
                     type = TOKEN_TYPE_NEQ;
-                    advanceScanner( scan );
+                    advanceSource( source );
                 } else {
                     type = TOKEN_TYPE_NOT;
                 }
@@ -137,22 +137,27 @@ bool advanceLexer( Lexer *lexer ) {
             
             case '(':
                 type = TOKEN_TYPE_LEFT_PAR;
-                advanceScanner( scan );
+                advanceSource( source );
                 break;
 
             case ')':
                 type = TOKEN_TYPE_RIGHT_PAR;
-                advanceScanner( scan );
+                advanceSource( source );
                 break;
 
             case ',':
                 type = TOKEN_TYPE_COMMA;
-                advanceScanner( scan );
+                advanceSource( source );
+                break;
+
+            case ';':
+                type = TOKEN_TYPE_SEMICOLON;
+                advanceSource( source );
                 break;
 
             default:
                 trace( "Invalid character '%c'", c );
-                advanceScanner( scan );
+                advanceSource( source );
                 break;
 
         }
@@ -169,8 +174,8 @@ Token getTokenLexer( Lexer *lexer ) {
         return (Token) {
             .type = TOKEN_TYPE_EOF,
             .value = "",
-            .lineNumber = lexer->scan->lineNumber,
-            .charNumber = lexer->scan->charNumber + 1
+            .lineNumber = lexer->source->lineNumber,
+            .charNumber = lexer->source->charNumber + 1
          };
     }
 
@@ -186,25 +191,25 @@ Token getTokenLexer( Lexer *lexer ) {
 
 }
 
-static void skipWhiteSpace( Scanner *scan ) {
+static void skipWhiteSpace( Source *source ) {
 
-    char c = getCharScanner( scan );
+    char c = getCharSource( source );
     
     // discard spaces
-    while ( c != CHAR_STREAM_EOF && ( c == ' ' || c == '\t' || c == '\n' ) ) {
-        advanceScanner( scan );
-        c = getCharScanner( scan );
+    while ( c != SOURCE_CHAR_EOF && ( c == ' ' || c == '\t' || c == '\n' ) ) {
+        advanceSource( source );
+        c = getCharSource( source );
     }
 
 }
 
 static void skipToEndOfLine( Lexer *lexer ) {
 
-    Scanner *scan = lexer->scan;
+    Source *source = lexer->source;
 
-    while ( getCharScanner( scan ) != '\n' ) {
-        advanceScanner( scan );
-        if ( scan->eofReached ) {
+    while ( getCharSource( source ) != '\n' ) {
+        advanceSource( source );
+        if ( source->eofReached ) {
             lexer->eofReached = true;
             break;
         }
@@ -212,30 +217,30 @@ static void skipToEndOfLine( Lexer *lexer ) {
 
 }
 
-static void scanIdentifier( Scanner *scan ) {
+static void scanIdentifier( Source *source ) {
 
-    char c = getCharScanner( scan );
+    char c = getCharSource( source );
     bufferPos = 0;
 
-    while ( c != CHAR_STREAM_EOF && c != ' ' && c != '\t' && c != '\n' ) {
+    while ( c != SOURCE_CHAR_EOF && c != ' ' && c != '\t' && c != '\n' ) {
         valueBuffer[bufferPos++] = c;
-        advanceScanner( scan );
-        c = getCharScanner( scan );
+        advanceSource( source );
+        c = getCharSource( source );
     }
 
     valueBuffer[bufferPos] = '\0';
 
 }
 
-static void scanIntegerLiteral( Scanner *scan ) {
+static void scanIntegerLiteral( Source *source ) {
 
-    char c = getCharScanner( scan );
+    char c = getCharSource( source );
     bufferPos = 0;
 
     do {
         valueBuffer[bufferPos++] = c;
-        advanceScanner( scan );
-        c = getCharScanner( scan );
+        advanceSource( source );
+        c = getCharSource( source );
     } while ( isdigit( c ) );
 
     valueBuffer[bufferPos] = '\0';
@@ -244,14 +249,14 @@ static void scanIntegerLiteral( Scanner *scan ) {
 
 static void classifyTokenType( char *tokenValue ) {
 
-    if ( TextIsEqual( tokenValue, "mover" ) ) {
-        type = TOKEN_TYPE_MOVER;
-    } else if ( TextIsEqual( tokenValue, "girar" ) ) {
-        type = TOKEN_TYPE_GIRAR;
-    } else if ( TextIsEqual( tokenValue, "pegar" ) ) {
-        type = TOKEN_TYPE_PEGAR;
-    } else if ( TextIsEqual( tokenValue, "soltar" ) ) {
-        type = TOKEN_TYPE_SOLTAR;
+    if ( TextIsEqual( tokenValue, "move" ) ) {
+        type = TOKEN_TYPE_MOVE;
+    } else if ( TextIsEqual( tokenValue, "turn" ) ) {
+        type = TOKEN_TYPE_TURN;
+    } else if ( TextIsEqual( tokenValue, "pick" ) ) {
+        type = TOKEN_TYPE_PICK;
+    } else if ( TextIsEqual( tokenValue, "drop" ) ) {
+        type = TOKEN_TYPE_DROP;
     } else {
         type = TOKEN_TYPE_IDENTIFIER;
     }

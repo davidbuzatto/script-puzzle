@@ -10,10 +10,10 @@ static char tokenTypeTable[][100] = {
 
     [TOKEN_TYPE_IDENTIFIER] = "IDENTIFIER",
 
-    [TOKEN_TYPE_MOVER] = "MOVER",
-    [TOKEN_TYPE_GIRAR] = "GIRAR",
-    [TOKEN_TYPE_PEGAR] = "PEGAR",
-    [TOKEN_TYPE_SOLTAR] = "SOLTAR",
+    [TOKEN_TYPE_MOVE] = "MOVE",
+    [TOKEN_TYPE_TURN] = "TURN",
+    [TOKEN_TYPE_PICK] = "PICK",
+    [TOKEN_TYPE_DROP] = "DROP",
 
     [TOKEN_TYPE_ADD] = "ADD",
     [TOKEN_TYPE_SUB] = "SUB",
@@ -32,6 +32,7 @@ static char tokenTypeTable[][100] = {
     [TOKEN_TYPE_LEFT_PAR] = "LEFT PAR",
     [TOKEN_TYPE_RIGHT_PAR] = "RIGHT PAR",
     [TOKEN_TYPE_COMMA] = "COMMA",
+    [TOKEN_TYPE_SEMICOLON] = "SEMICOLON",
 
     [TOKEN_TYPE_INTEGER] = "INTEGER",
 

@@ -1,9 +1,10 @@
-mover 10
-pegar
-girar girar 
-mover 10 // teste asdf asd asd sad    
-girar girar girar
-mover 5
-soltar
+move 10
+take
+turn turn 
+// comment
+move 10
+turn turn turn
+move 5
+drop
 
-+ - * / % < <= > >= == != ! ( ) , , , 
+operators + - * / % < <= > >= == != ! ( ) , , , ;

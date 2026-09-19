@@ -12,13 +12,13 @@
 #include "GameWindow.h"
 #include "Lexer.h"
 #include "Macros.h"
-#include "Scanner.h"
+#include "Source.h"
 #include "Token.h"
 
 int main( void ) {
 
-    Scanner cs;
-    initScanner( &cs, "source.txt");
+    Source cs;
+    initSource( &cs, "source.txt");
 
     Lexer ts;
     initLexer( &ts, &cs );
@@ -32,10 +32,10 @@ int main( void ) {
     } while ( t.type != TOKEN_TYPE_EOF );
 
     /*do {
-        trace( "%c", getScanner( &cs ) );
-    } while ( advanceScanner( &cs ) );*/
+        trace( "%c", getSource( &cs ) );
+    } while ( advanceSource( &cs ) );*/
 
-    destroyScanner( &cs );
+    destroySource( &cs );
 
     return 0;
 
