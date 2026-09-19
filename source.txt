@@ -1,6 +1,9 @@
 mover a5a
-pegar
+pegar girar pegar teste mover    100
 girar
 girar
 mover 54
+mover 5a
+
+
 mover 5a

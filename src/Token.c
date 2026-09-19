@@ -16,8 +16,8 @@ static char tokenTypeTable[][100] = {
 
 void printToken( Token *token ) {
     if ( token->type == TOKEN_TYPE_EOF ) {
-        trace( "TOKEN [%s]", tokenTypeTable[token->type] );
+        trace( "TOKEN [%s] (%d, %d)", tokenTypeTable[token->type], token->lineNumber, token->charNumber );
     } else {
-        trace( "TOKEN [%s] -> %s", tokenTypeTable[token->type], token->value );
+        trace( "TOKEN [%s] -> %s (%d, %d)", tokenTypeTable[token->type], token->value, token->lineNumber, token->charNumber );
     }
 }

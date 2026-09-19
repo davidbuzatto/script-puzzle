@@ -5,6 +5,8 @@
 typedef struct Scanner {
     char *filePointer;
     char *current;
+    int lineNumber;
+    int charNumber;
     bool eofReached;
 } Scanner;
 

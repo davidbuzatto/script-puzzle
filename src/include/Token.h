@@ -11,6 +11,8 @@ typedef enum TokenType {
 typedef struct Token {
     TokenType type;
     char value[100];
+    int lineNumber;
+    int charNumber;
 } Token;
 
 void printToken( Token *token );

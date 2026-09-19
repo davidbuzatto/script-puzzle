@@ -9,6 +9,8 @@ void initScanner( Scanner *scan, const char *file ) {
     char *source = LoadFileText( file );
     scan->filePointer = source;
     scan->current = source;
+    scan->lineNumber = 1;
+    scan->charNumber = 1;
     scan->eofReached = false;
 }
 
@@ -31,6 +33,13 @@ bool advanceScanner( Scanner *scan ) {
     if ( *scan->current == '\0' ) {
         scan->eofReached = true;
         return false;
+    }
+
+    if ( *scan->current == '\n' ) {
+        scan->lineNumber++;
+        scan->charNumber = 0;
+    } else {
+        scan->charNumber++;
     }
 
     return true;

@@ -49,6 +49,8 @@ bool advanceLexer( Lexer *lexer ) {
     }
 
     TokenType type = TOKEN_TYPE_IDENTIFIER;
+    int lineNumber = scan->lineNumber;
+    int charNumber = scan->charNumber;
 
     switch ( c ) {
         default:
@@ -57,6 +59,8 @@ bool advanceLexer( Lexer *lexer ) {
     }
 
     currentToken.type = type;
+    currentToken.lineNumber = lineNumber;
+    currentToken.charNumber = charNumber;
     TextCopy( currentToken.value, valueBuffer );
 
     if ( type == TOKEN_TYPE_IDENTIFIER ) {
@@ -70,7 +74,11 @@ bool advanceLexer( Lexer *lexer ) {
 Token getTokenLexer( Lexer *lexer ) {
 
     if ( lexer->eofReached ) {
-        return (Token) { .type = TOKEN_TYPE_EOF };
+        return (Token) {
+            .type = TOKEN_TYPE_EOF,
+            .lineNumber = lexer->scan->lineNumber,
+            .charNumber = lexer->scan->charNumber
+         };
     }
 
     return currentToken;
