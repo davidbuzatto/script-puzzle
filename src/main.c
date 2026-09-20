@@ -14,6 +14,7 @@
 #include "Macros.h"
 #include "Source.h"
 #include "Token.h"
+#include "include/Parser.h"
 
 static void testSource( const char *file );
 static void testLexer( const char *file );
@@ -49,51 +50,47 @@ int main( void ) {
 
 static void testSource( const char *file ) {
 
-    Source cs;
-    initSource( &cs, file );
+    Source source;
+    initSource( &source, file );
 
     do {
-        trace( "%c (%d %d)", getCharSource( &cs ), cs.lineNumber, cs.charNumber );
-    } while ( advanceSource( &cs ) );
+        trace( "%c (%d %d)", getCharSource( &source ), source.lineNumber, source.charNumber );
+    } while ( advanceSource( &source ) );
 
-    destroySource( &cs );
+    destroySource( &source );
 
 }
 
 static void testLexer( const char *file ) {
 
-    Source cs;
-    initSource( &cs, file );
+    Source source;
+    initSource( &source, file );
 
-    Lexer ts;
-    initLexer( &ts, &cs );
+    Lexer lexer;
+    initLexer( &lexer, &source );
 
     Token t;
     do {
-        t = getTokenLexer( &ts );
+        t = getTokenLexer( &lexer );
         printToken( &t );
-        advanceLexer( &ts );
+        advanceLexer( &lexer );
     } while ( t.type != TOKEN_TYPE_EOF );
 
-    destroySource( &cs );
+    destroySource( &source );
 
 }
 
 static void testParser( const char *file ) {
 
-    Source cs;
-    initSource( &cs, file );
+    Source source;
+    initSource( &source, file );
 
-    Lexer ts;
-    initLexer( &ts, &cs );
+    Lexer lexer;
+    initLexer( &lexer, &source );
 
-    Token t;
-    do {
-        t = getTokenLexer( &ts );
-        printToken( &t );
-        advanceLexer( &ts );
-    } while ( t.type != TOKEN_TYPE_EOF );
+    ASTNode root = parseScript( &lexer );
+    printAST( &root );
 
-    destroySource( &cs );
+    destroySource( &source );
 
 }
