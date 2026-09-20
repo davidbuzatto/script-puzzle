@@ -1,5 +1,5 @@
 move 10
-take
+pick
 turn turn 
 // comment
 move 10

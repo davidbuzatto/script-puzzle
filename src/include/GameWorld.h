@@ -7,11 +7,16 @@
  */
 #pragma once
 
-typedef struct GameWorld {
+#include "Robot.h"
+
+struct GameWorld {
     int size;
     int rows;
     int cols;
-} GameWorld;
+    Robot robot;
+    char *grid;
+    int remainingTargets;
+};
 
 /**
  * @brief Creates a dinamically allocated GameWorld struct instance.
