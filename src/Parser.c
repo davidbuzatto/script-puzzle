@@ -6,6 +6,15 @@
 #include "Token.h"
 #include "include/Parser.h"
 
+static char nodeTypeTable[][100] = {
+    [AST_NODE_TYPE_SCRIPT] = "SCRIPT",
+    [AST_NODE_TYPE_MOVE] = "MOVE",
+    [AST_NODE_TYPE_TURN] = "TURN",
+    [AST_NODE_TYPE_PICK] = "PICK",
+    [AST_NODE_TYPE_DROP] = "DROP",
+    [AST_NODE_TYPE_TOKEN] = "TOKEN",
+};
+
 static ASTNode *createASTNode( ASTNodeType type, int childCapacity );
 static void addASTChildNode( ASTNode *parent, ASTNode *child );
 static void addASTChildToken( ASTNode *parent, Token token );
@@ -18,97 +27,85 @@ static bool isIntegerToken( Token *t );
 ASTNode *parseScript( Lexer *lexer ) {
 
     ASTNode *script = createASTNode( AST_NODE_TYPE_SCRIPT, 2 );
-    addASTChildNode( script, parseStatements( lexer ) );
+    parseStatements( lexer, script );
 
     Token t = getTokenLexer( lexer );
     if ( t.type != TOKEN_TYPE_EOF ) {
         trace( "syntax error (script) - expecting EOF, found:" );
         printToken( &t, 0 );
     }
-    addASTChildToken( script, t );
 
     return script;
 
 }
 
-ASTNode *parseStatements( Lexer *lexer ) {
-    
-    ASTNode *statements = createASTNode( AST_NODE_TYPE_STATEMENTS, 40 );
+void parseStatements( Lexer *lexer, ASTNode *script ) {
 
     // required
     Token token = getTokenLexer( lexer );
     if ( !isStatementToken( &token ) ) {
         trace( "syntax error (statements)" );
-        return statements;
+        return;
     }
 
     do {
-        addASTChildNode( statements, parseStatement( lexer ) );
+        addASTChildNode( script, parseStatement( lexer ) );
         token = getTokenLexer( lexer );
     } while ( isStatementToken( &token ) );
-
-    return statements;
 
 }
 
 ASTNode *parseStatement( Lexer *lexer ) {
 
-    ASTNode *statement = createASTNode( AST_NODE_TYPE_STATEMENT, 1 );
-
     Token token = getTokenLexer( lexer );
 
     switch ( token.type ) {
         case TOKEN_TYPE_MOVE:
-            addASTChildNode( statement, parseMove( lexer ) );
-            break;
+            return parseMove( lexer );
         case TOKEN_TYPE_TURN:
-            addASTChildNode( statement, parseTurn( lexer ) );
-            break;
+            return parseTurn( lexer );
         case TOKEN_TYPE_PICK:
-            addASTChildNode( statement, parsePick( lexer ) );
-            break;
+            return parsePick( lexer );
         case TOKEN_TYPE_DROP:
-            addASTChildNode( statement, parseDrop( lexer ) );
-            break;
+            return parseDrop( lexer );
         default:
             trace( "syntax error (statement) -- probably unreachable" );
-            break;
+            return NULL;
     }
-
-    return statement;
     
 }
 
 ASTNode *parseMove( Lexer *lexer ) {
 
     ASTNode *move = createASTNode( AST_NODE_TYPE_MOVE, 1 );
-    addASTChildToken( move, getTokenLexer( lexer ) );
+    move->token = getTokenLexer( lexer );
     advanceLexer( lexer );
 
     Token t = getTokenLexer( lexer );
-    advanceLexer( lexer );
 
     if ( isIntegerToken( &t ) ) {
         addASTChildToken( move, t );
+        advanceLexer( lexer );
     } else {
         trace( "syntax error (move) - expecting an integer, found:" );
         printToken( &t, 0 );
     }
 
     return move;
+
 }
 
 ASTNode *parseTurn( Lexer *lexer ) {
 
     ASTNode *turn = createASTNode( AST_NODE_TYPE_TURN, 1 );
-    addASTChildToken( turn, getTokenLexer( lexer ) );
+    turn->token = getTokenLexer( lexer );
     advanceLexer( lexer );
 
     Token t = getTokenLexer( lexer );
-    advanceLexer( lexer );
 
     if ( isDirectionToken( &t ) ) {
         addASTChildToken( turn, t );
+        advanceLexer( lexer );
     } else {
         trace( "syntax error (turn) - expecting a direction, found:" );
         printToken( &t, 0 );
@@ -119,15 +116,15 @@ ASTNode *parseTurn( Lexer *lexer ) {
 }
 
 ASTNode *parsePick( Lexer *lexer ) {
-    ASTNode *pick = createASTNode( AST_NODE_TYPE_PICK, 1 );
-    addASTChildToken( pick, getTokenLexer( lexer ) );
+    ASTNode *pick = createASTNode( AST_NODE_TYPE_PICK, 0 );
+    pick->token = getTokenLexer( lexer );
     advanceLexer( lexer );
     return pick;
 }
 
 ASTNode *parseDrop( Lexer *lexer ) {
-    ASTNode *drop = createASTNode( AST_NODE_TYPE_DROP, 1 );
-    addASTChildToken( drop, getTokenLexer( lexer ) );
+    ASTNode *drop = createASTNode( AST_NODE_TYPE_DROP, 0 );
+    drop->token = getTokenLexer( lexer );
     advanceLexer( lexer );
     return drop;
 }
@@ -198,31 +195,16 @@ static void printASTHelper( ASTNode *node, int level, int indentation ) {
         return;
     }
 
-    switch ( node->type ) {
-        case AST_NODE_TYPE_SCRIPT:
-            trace( "%*s%s", level, "", "SCRIPT" );
-            break;
-        case AST_NODE_TYPE_STATEMENTS:
-            trace( "%*s%s", level, "", "STATEMENTS" );
-            break;
-        case AST_NODE_TYPE_STATEMENT:
-            trace( "%*s%s", level, "", "STATEMENT" );
-            break;
-        case AST_NODE_TYPE_MOVE:
-            trace( "%*s%s", level, "", "MOVE" );
-            break;
-        case AST_NODE_TYPE_TURN:
-            trace( "%*s%s", level, "", "TURN" );
-            break;
-        case AST_NODE_TYPE_PICK:
-            trace( "%*s%s", level, "", "PICK" );
-            break;
-        case AST_NODE_TYPE_DROP:
-            trace( "%*s%s", level, "", "DROP" );
-            break;
-        case AST_NODE_TYPE_TOKEN:
-            printToken( &node->token, level );
-            break;
+    if ( node->type == AST_NODE_TYPE_TOKEN ) {
+        printToken( &node->token, level );
+    } else if ( node->type == AST_NODE_TYPE_SCRIPT ) {
+        trace( "%*s%s", level, "", nodeTypeTable[node->type] );
+    } else {
+        trace( 
+            "%*s%s (%d, %d)", level, "", 
+            nodeTypeTable[node->type], 
+            node->token.lineNumber, node->token.charNumber
+        );
     }
 
     for ( int i = 0; i < node->childCount; i++ ) {

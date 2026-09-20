@@ -8,8 +8,6 @@
 
 typedef enum ASTNodeType {
     AST_NODE_TYPE_SCRIPT,
-    AST_NODE_TYPE_STATEMENTS,
-    AST_NODE_TYPE_STATEMENT,
     AST_NODE_TYPE_MOVE,
     AST_NODE_TYPE_TURN,
     AST_NODE_TYPE_PICK,
@@ -28,7 +26,7 @@ struct ASTNode {
 };
 
 ASTNode *parseScript( Lexer *lexer );
-ASTNode *parseStatements( Lexer *lexer );
+void parseStatements( Lexer *lexer, ASTNode *script );
 ASTNode *parseStatement( Lexer *lexer );
 ASTNode *parseMove( Lexer *lexer );
 ASTNode *parseTurn( Lexer *lexer );
