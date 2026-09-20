@@ -1,4 +1,6 @@
 Show command arguments;
 Show remaining steps;
 Show error;
-Highlight current code in execution.
+Highlight current code in execution;
+Implement reset;
+Implement game states.
