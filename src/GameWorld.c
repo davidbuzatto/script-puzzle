@@ -40,7 +40,7 @@ GameWorld *createGameWorld( void ) {
         .angleOffset = 0,
         .walkDistance = gw->size,
         .animationCounter = 0,
-        .animationTime = 0.5f,
+        .animationTime = 0.1f,
         .carryingObject = false,
         .state = ROBOT_STATE_IDLE
     };
