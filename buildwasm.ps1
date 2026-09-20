@@ -48,7 +48,7 @@ if ( $compile -or $cleanAndCompile -or $compileAndRun -or $all ) {
     emcc -o "./$BuildDir/$CompiledFile.html" `
          @sources `
          -Wall `
-         -std=c99 `
+         -std=c11 `
          -D_DEFAULT_SOURCE `
          -Wno-missing-braces `
          -Wunused-result `

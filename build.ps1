@@ -43,7 +43,7 @@ if ( $compile -or $cleanAndCompile -or $compileAndRun -or $all ) {
         -Wextra `
         -Wno-unused-parameter `
         -pedantic-errors `
-        -std=c99 `
+        -std=c11 `
         -Wno-missing-braces `
         -I src/include/ `
         -L lib/win64_mingw-w64/ `

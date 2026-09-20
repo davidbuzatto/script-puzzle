@@ -28,7 +28,7 @@ compile_project() {
         -Wextra \
         -Wno-unused-parameter \
         -pedantic-errors \
-        -std=c99 \
+        -std=c11 \
         -Wno-missing-braces \
         -I src/include/ \
         -L lib/macos/ \

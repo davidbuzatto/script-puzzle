@@ -9,14 +9,14 @@
 
 #include "Robot.h"
 
-struct GameWorld {
+typedef struct GameWorld {
     int size;
     int rows;
     int cols;
     Robot robot;
     char *grid;
     int remainingTargets;
-};
+} GameWorld;
 
 /**
  * @brief Creates a dinamically allocated GameWorld struct instance.
