@@ -148,6 +148,10 @@ void printAST( ASTNode *node ) {
     printASTHelper( node, 0, 2 );
 }
 
+const char *getASTNodeTypeName( ASTNodeType type ) {
+    return nodeTypeTable[type];
+}
+
 static ASTNode *createASTNode( ASTNodeType type, int childCapacity ) {
 
     ASTNode *newNode = malloc( sizeof( ASTNode ) );

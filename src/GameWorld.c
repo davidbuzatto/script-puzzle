@@ -69,6 +69,18 @@ GameWorld *createGameWorld( void ) {
         }
     }
 
+    Source source;
+    initSource( &source, "testRobotPort.txt" );
+
+    Lexer lexer;
+    initLexer( &lexer, &source );
+
+    ASTNode *root = parseScript( &lexer );
+    destroySource( &source );
+
+    initInterpreter( &gw->interpreter, root );
+    gw->running = false;
+
     return gw;
 
 }
@@ -77,6 +89,7 @@ GameWorld *createGameWorld( void ) {
  * @brief Destroys a GameWindow object and its dependecies.
  */
 void destroyGameWorld( GameWorld *gw ) {
+    destroyInterpreter( &gw->interpreter );
     free( gw->grid );
     free( gw );
 }
@@ -85,8 +98,20 @@ void destroyGameWorld( GameWorld *gw ) {
  * @brief Reads user input and updates the state of the game.
  */
 void updateGameWorld( GameWorld *gw, float delta ) {
-    inputRobot( &gw->robot, gw );
+
+    if ( IsKeyPressed( KEY_ENTER ) ) {
+        gw->running = true;
+    }
+
+    if ( gw->running && gw->robot.state == ROBOT_STATE_IDLE ) {
+        gw->running = stepInterpreter( &gw->interpreter, gw );
+    } else {
+        inputRobot( &gw->robot, gw );
+    }
+
+    
     updateRobot( &gw->robot, delta );
+
 }
 
 /**
@@ -128,6 +153,19 @@ void drawGameWorld( GameWorld *gw ) {
     drawRobot( &gw->robot );
 
     DrawText( TextFormat( "Remaining targets: %d", gw->remainingTargets ), 10, 10, 20, BLACK );
+
+    ASTNode *current = gw->interpreter.current;
+    if ( gw->running && current != NULL ) {
+        DrawText( 
+            TextFormat( 
+                "Running: %s (%d, %d)", 
+                getASTNodeTypeName( current->type ),
+                current->token.lineNumber,
+                current->token.charNumber
+            ), 
+            10, 35, 20, DARKBLUE
+        );
+    }
 
     EndDrawing();
 

@@ -1,0 +1,4 @@
+Show command arguments;
+Show remaining steps;
+Show error;
+Highlight current code inexecution

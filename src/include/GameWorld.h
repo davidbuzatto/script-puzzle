@@ -7,15 +7,22 @@
  */
 #pragma once
 
+#include "Interpreter.h"
 #include "Robot.h"
 
 typedef struct GameWorld {
+
     int size;
     int rows;
     int cols;
+
     Robot robot;
     char *grid;
     int remainingTargets;
+
+    Interpreter interpreter;
+    bool running;
+
 } GameWorld;
 
 /**

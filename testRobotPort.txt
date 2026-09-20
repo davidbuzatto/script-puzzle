@@ -1,0 +1,56 @@
+mover 2
+girar esquerda
+mover 6
+pegar
+girar esquerda
+girar esquerda
+mover 4
+girar esquerda
+mover 6
+girar esquerda
+mover 3
+soltar
+girar esquerda
+girar esquerda
+mover 3
+girar direita
+mover 6
+girar direita
+mover 5
+girar direita
+pegar
+girar direita
+mover 5
+girar esquerda
+mover 8
+girar esquerda
+mover 6
+girar direita
+mover 4
+soltar
+girar direita
+girar direita
+mover 7
+girar esquerda
+mover 6
+girar direita
+mover 5
+girar direita
+mover 5
+girar direita
+mover 1
+pegar
+girar direita
+girar direita
+mover 1
+girar esquerda
+mover 5
+girar esquerda
+mover 8
+girar esquerda
+mover 5
+girar direita
+mover 5
+girar direita
+mover 6
+soltar

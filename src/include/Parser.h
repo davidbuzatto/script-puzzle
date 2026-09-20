@@ -35,3 +35,4 @@ ASTNode *parseDrop( Lexer *lexer );
 
 void destroyAST( ASTNode *node );
 void printAST( ASTNode *node );
+const char *getASTNodeTypeName( ASTNodeType type );

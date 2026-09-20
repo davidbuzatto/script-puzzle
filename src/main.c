@@ -22,29 +22,29 @@ static void testParser( const char *file );
 
 int main( void ) {
 
-    //testSource( "testSource.txt" );
-    //testLexer( "testLexer.txt" );
-    testParser( "testParser.txt" );
+    /*testSource( "testSource.txt" );
+    testLexer( "testLexer.txt" );
+    testParser( "testParser.txt" );*/
 
-    /*GameWindow *gameWindow = createGameWindow(
-        800,             // width
-        450,             // height
-        "Script Puzzle", // title
-        60,              // target FPS
-        true,            // antialiasing
-        false,           // resizable
-        false,           // full screen
-        false,           // undecorated
-        false,           // always on top
-        false,           // invisible background
-        false,           // always run
-        false,           // load resources
-        false            // init audio
+    GameWindow *gameWindow = createGameWindow(
+        800,                 // width
+        450,                 // height
+        "Scriptable Puzzle", // title
+        60,                  // target FPS
+        true,                // antialiasing
+        false,               // resizable
+        false,               // full screen
+        false,               // undecorated
+        false,               // always on top
+        false,               // invisible background
+        false,               // always run
+        false,               // load resources
+        false                // init audio
     );
 
     initGameWindow( gameWindow );
 
-    return 0;*/
+    return 0;
 
 }
 

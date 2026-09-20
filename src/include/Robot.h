@@ -35,4 +35,8 @@ typedef struct Robot {
 void inputRobot( Robot *r, GameWorld *gw );
 void updateRobot( Robot *r, float delta );
 void drawRobot( Robot *r );
-void turnRobot( Robot *r );
+
+bool startMoveRobot( Robot *r, GameWorld *gw );
+void startTurnRobot( Robot *r, bool turnLeft );
+bool startPickRobot( Robot *r, GameWorld *gw );
+bool startDropRobot( Robot *r, GameWorld *gw );

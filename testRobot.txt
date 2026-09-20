@@ -1,0 +1,56 @@
+move 2
+turn left
+move 6
+pick
+turn left
+turn left
+move 4
+turn left
+move 6
+turn left
+move 3
+drop
+turn left
+turn left
+move 3
+turn right
+move 6
+turn right
+move 5
+turn right
+pick
+turn right
+move 5
+turn left
+move 8
+turn left
+move 6
+turn right
+move 4
+drop
+turn right
+turn right
+move 7
+turn left
+move 6
+turn right
+move 5
+turn right
+move 5
+turn right
+move 1
+pick
+turn right
+turn right
+move 1
+turn left
+move 5
+turn left
+move 8
+turn left
+move 5
+turn right
+move 5
+turn right
+move 6
+drop
