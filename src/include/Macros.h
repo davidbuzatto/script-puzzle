@@ -2,4 +2,4 @@
 
 #include "raylib/raylib.h"
 
-#define trace(...) TraceLog( LOG_INFO, __VA_ARGS__ );
+#define trace(...) TraceLog( LOG_INFO, __VA_ARGS__ )

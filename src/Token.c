@@ -44,12 +44,35 @@ static char tokenTypeTable[][100] = {
 
 };
 
-void printToken( Token *token ) {
+void printToken( Token *token, int indentation ) {
+
     if ( token->type == TOKEN_TYPE_EOF ) {
-        trace( "TOKEN [%s] (%d, %d)", tokenTypeTable[token->type], token->lineNumber, token->charNumber );
+        trace( 
+            "%*sTOKEN [%s] (%d, %d)",
+            indentation,
+            "",
+            tokenTypeTable[token->type],
+            token->lineNumber,
+            token->charNumber
+        );
     } else if ( token->value[0] == '\0' ) {
-        trace( "TOKEN [%s] (%d, %d)", tokenTypeTable[token->type], token->lineNumber, token->charNumber );
+        trace(
+            "%*sTOKEN [%s] (%d, %d)",
+            indentation,
+            "",
+            tokenTypeTable[token->type],
+            token->lineNumber,
+            token->charNumber
+        );
     } else {
-        trace( "TOKEN [%s] -> %s (%d, %d)", tokenTypeTable[token->type], token->value, token->lineNumber, token->charNumber );
+        trace( 
+            "%*sTOKEN [%s] -> %s (%d, %d)",
+            indentation,
+            "",
+            tokenTypeTable[token->type],
+            token->value,
+            token->lineNumber,
+            token->charNumber
+        );
     }
 }

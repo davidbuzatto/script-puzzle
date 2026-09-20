@@ -72,7 +72,7 @@ static void testLexer( const char *file ) {
     Token t;
     do {
         t = getTokenLexer( &lexer );
-        printToken( &t );
+        printToken( &t, 0 );
         advanceLexer( &lexer );
     } while ( t.type != TOKEN_TYPE_EOF );
 
@@ -88,9 +88,10 @@ static void testParser( const char *file ) {
     Lexer lexer;
     initLexer( &lexer, &source );
 
-    ASTNode root = parseScript( &lexer );
-    printAST( &root );
-
+    ASTNode *root = parseScript( &lexer );
     destroySource( &source );
+
+    printAST( root );
+    destroyAST( root );
 
 }

@@ -44,4 +44,4 @@ typedef struct Token {
     int charNumber;
 } Token;
 
-void printToken( Token *token );
+void printToken( Token *token, int indentation );

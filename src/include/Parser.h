@@ -14,20 +14,26 @@ typedef enum ASTNodeType {
     AST_NODE_TYPE_TURN,
     AST_NODE_TYPE_PICK,
     AST_NODE_TYPE_DROP,
+    AST_NODE_TYPE_TOKEN,
 } ASTNodeType;
 
-typedef struct ASTNode {
+typedef struct ASTNode ASTNode;
+
+struct ASTNode {
     ASTNodeType type;
-    Token tokens[100];
-    int tokensCount;
-} ASTNode;
+    ASTNode **children;
+    int childCount;
+    int childCapacity;
+    Token token;
+};
 
-ASTNode parseScript( Lexer *lexer );
-ASTNode parseStatements( Lexer *lexer );
-ASTNode parseStatement( Lexer *lexer );
-ASTNode parseMove( Lexer *lexer );
-ASTNode parseTurn( Lexer *lexer );
-ASTNode parsePick( Lexer *lexer );
-ASTNode parseDrop( Lexer *lexer );
+ASTNode *parseScript( Lexer *lexer );
+ASTNode *parseStatements( Lexer *lexer );
+ASTNode *parseStatement( Lexer *lexer );
+ASTNode *parseMove( Lexer *lexer );
+ASTNode *parseTurn( Lexer *lexer );
+ASTNode *parsePick( Lexer *lexer );
+ASTNode *parseDrop( Lexer *lexer );
 
-void printAST( ASTNode *root );
+void destroyAST( ASTNode *node );
+void printAST( ASTNode *node );
