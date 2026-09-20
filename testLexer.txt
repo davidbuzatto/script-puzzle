@@ -1,6 +1,6 @@
 move 10
 pick
-turn turn 
+turn right turn left
 // comment
 move 10
 turn turn turn

@@ -8,6 +8,9 @@ typedef enum TokenType {
     TOKEN_TYPE_PICK,
     TOKEN_TYPE_DROP,
 
+    TOKEN_TYPE_LEFT,
+    TOKEN_TYPE_RIGHT,
+
     TOKEN_TYPE_ADD,
     TOKEN_TYPE_SUB,
     TOKEN_TYPE_MUL,

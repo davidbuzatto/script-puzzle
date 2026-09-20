@@ -2,9 +2,11 @@ script = statements EOF .
 
 statements = statement statements .
 
-statement = command .
+statement = move | turn | pick | drop .
 
-command = 'mover' 
-        | 'girar'
-        | 'pegar'
-        | 'soltar' .
+move = ( 'move' | 'mover' ) INTEGER .
+turn = ( 'turn' | 'girar' ) ( 'left' | 'right' | 'esquerda' | 'direita' ) .
+pick = ( 'pick' | 'pegar' ) .
+drop = ( 'drop' | 'soltar' ) .
+
+INTEGER = [0..9]+ .

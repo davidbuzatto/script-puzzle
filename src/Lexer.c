@@ -249,14 +249,18 @@ static void scanIntegerLiteral( Source *source ) {
 
 static void classifyTokenType( char *tokenValue ) {
 
-    if ( TextIsEqual( tokenValue, "move" ) ) {
+    if ( TextIsEqual( tokenValue, "move" ) || TextIsEqual( tokenValue, "mover" ) ) {
         type = TOKEN_TYPE_MOVE;
-    } else if ( TextIsEqual( tokenValue, "turn" ) ) {
+    } else if ( TextIsEqual( tokenValue, "turn" ) || TextIsEqual( tokenValue, "girar" ) ) {
         type = TOKEN_TYPE_TURN;
-    } else if ( TextIsEqual( tokenValue, "pick" ) ) {
+    } else if ( TextIsEqual( tokenValue, "pick" ) || TextIsEqual( tokenValue, "pegar" ) ) {
         type = TOKEN_TYPE_PICK;
-    } else if ( TextIsEqual( tokenValue, "drop" ) ) {
+    } else if ( TextIsEqual( tokenValue, "drop" ) || TextIsEqual( tokenValue, "soltar" ) ) {
         type = TOKEN_TYPE_DROP;
+    } else if ( TextIsEqual( tokenValue, "left" ) || TextIsEqual( tokenValue, "esquerda" ) ) {
+        type = TOKEN_TYPE_LEFT;
+    } else if ( TextIsEqual( tokenValue, "right" ) || TextIsEqual( tokenValue, "direita" ) ) {
+        type = TOKEN_TYPE_RIGHT;
     } else {
         type = TOKEN_TYPE_IDENTIFIER;
     }

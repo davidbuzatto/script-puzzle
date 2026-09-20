@@ -21,11 +21,11 @@ static void testParser( const char *file );
 
 int main( void ) {
 
-    //testSource( "source.txt" );
-    //testLexer( "source.txt" );
-    //testParser( "source.txt" );
+    //testSource( "testSource.txt" );
+    //testLexer( "testLexer.txt" );
+    testParser( "testParser.txt" );
 
-    GameWindow *gameWindow = createGameWindow(
+    /*GameWindow *gameWindow = createGameWindow(
         800,             // width
         450,             // height
         "Script Puzzle", // title
@@ -43,7 +43,7 @@ int main( void ) {
 
     initGameWindow( gameWindow );
 
-    return 0;
+    return 0;*/
 
 }
 
@@ -53,7 +53,7 @@ static void testSource( const char *file ) {
     initSource( &cs, file );
 
     do {
-        trace( "%c", getCharSource( &cs ) );
+        trace( "%c (%d %d)", getCharSource( &cs ), cs.lineNumber, cs.charNumber );
     } while ( advanceSource( &cs ) );
 
     destroySource( &cs );

@@ -1,0 +1,9 @@
+move 2
+pick
+turn right turn left
+move 4
+turn left
+turn left
+turn right
+move 2
+drop

@@ -15,6 +15,9 @@ static char tokenTypeTable[][100] = {
     [TOKEN_TYPE_PICK] = "PICK",
     [TOKEN_TYPE_DROP] = "DROP",
 
+    [TOKEN_TYPE_LEFT] = "LEFT",
+    [TOKEN_TYPE_RIGHT] = "RIGHT",
+
     [TOKEN_TYPE_ADD] = "ADD",
     [TOKEN_TYPE_SUB] = "SUB",
     [TOKEN_TYPE_MUL] = "MUL",
